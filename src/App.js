@@ -1,24 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useContext, useEffect } from 'react';
+
+import Login from './components/Login/Login';
+import Home from './components/Home/Home';
+import MainHeader from './components/MainHeader/MainHeader';
+import AuthContext from './components/store/auth-context';
 
 function App() {
+  useEffect(() => {
+    let xmlFile = new XMLHttpRequest();
+    xmlFile.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        console.log(xmlFile.responseXML)
+      }
+    }
+    xmlFile.open("GET", "./data/Notes.xml");
+    xmlFile.send();
+  }, []);
+
+  const ctx = useContext(AuthContext);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <React.Fragment>
+        <MainHeader onLogout={ctx.onLogout} />
+        <main>
+          {!ctx.isLoggedIn && <Login onLogin={ctx.onLogin} />}
+          {ctx.isLoggedIn && <Home onLogout={ctx.onLogout} />}
+        </main>
+    </React.Fragment>
   );
 }
 
